@@ -13,11 +13,20 @@ class Money:
     def __add__(self, other):
         if self.__currency != other.currency:
             raise ValueError("Mismatched currencies!")
-        return self.__amount + other.amount, self.__currency
+        return Money(self.__amount + other.amount, self.__currency)
+    
+    def __sub__(self, other):
+        if self.__currency != other.currency:
+            raise ValueError("Mismatched currencies!")
+        return Money(self.__amount - other.amount, self.__currency)
+
+    def __mul__(self, k):
+        return Money(self.__amount * k, self.__currency)
+    def __rmul__(self, k):
+        return self.__mul__(k,(int,float))
 tieneuro = Money(10, "EUR")
+
 vijfeuro = Money(5, "EUR")
 tweeeuro = Money(2,"EUR")
 dinar = Money(3,"DIN")
-print(tieneuro.amount)
-#add
-print(tieneuro + vijfeuro)
+Money(10,"USD") *3
