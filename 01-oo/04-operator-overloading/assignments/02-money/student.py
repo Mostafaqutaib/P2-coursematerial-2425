@@ -11,22 +11,30 @@ class Money:
         return self.__currency
     
     def __add__(self, other):
+        if not isinstance(other, Money):
+            return NotImplemented
         if self.__currency != other.currency:
-            raise ValueError("Mismatched currencies!")
+            raise RuntimeError("Mismatched currencies!")
         return Money(self.__amount + other.amount, self.__currency)
     
     def __sub__(self, other):
+        if not isinstance(other, Money):
+           return NotImplemented
         if self.__currency != other.currency:
-            raise ValueError("Mismatched currencies!")
+            raise RuntimeError("Mismatched currencies!")
         return Money(self.__amount - other.amount, self.__currency)
 
     def __mul__(self, k):
+        if not isinstance(k, (int, float)):
+            return NotImplemented
         return Money(self.__amount * k, self.__currency)
+
     def __rmul__(self, k):
-        return self.__mul__(k,(int,float))
+        return self.__mul__(k)
+    
 tieneuro = Money(10, "EUR")
 
 vijfeuro = Money(5, "EUR")
 tweeeuro = Money(2,"EUR")
 dinar = Money(3,"DIN")
-Money(10,"USD") *3
+print(3*Money(10,"USD"))
