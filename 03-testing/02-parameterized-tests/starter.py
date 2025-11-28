@@ -3,6 +3,10 @@ def matching_parentheses(string):
     for char in string:
         if char == '(':
             count += 1
-        if char == ')':
+        elif char == ')':
             count -= 1
+            # إذا أصبح العدد سالب، يعني هناك أقواس إغلاق بدون فتح
+            if count < 0:
+                return False
+    # في النهاية، يجب أن يكون العدد صفر
     return count == 0
