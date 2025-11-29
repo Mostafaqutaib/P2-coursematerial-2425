@@ -1,12 +1,15 @@
 from datetime import date, timedelta
+from calendars import Calendar, CalendarsStub
 class Task:
     def __init__(self, description, due_date):
         self._description = description
         self._due_date = due_date
         self._finished = False
+
     @property
     def description(self):
         return self._description
+    
     @property
     def due_date(self):
         return self._due_date
@@ -14,6 +17,7 @@ class Task:
     @property
     def finished(self):
         return self._finished
+    
     @finished.setter
     def finished(self, value):
         self._finished = bool(value)
@@ -21,7 +25,11 @@ class Task:
 class Tasklist:
     def __init__(self):
         self._task_lijst = []
-
+        self._calendar = Calendar.today
+    @property
+    def calendar(self):
+        return self._calendar
+    
     
     def add_task(self, task):
         if task.due_date < date.today():
@@ -46,8 +54,9 @@ class Tasklist:
         ]
 
 tasks = Tasklist()
-len(tasks)
-tomorrow = date.today() + timedelta(days=1)
-yesterday = date.today() - timedelta(days=1)
+calendar = CalendarsStub(date(2000,1,1))
+tomorrow = Calendar.today + timedelta(days=1)
+yesterday = Calendar.today - timedelta(days=1)
 task_of_tomorrow = Task('over wat het gaat', tomorrow)
 tasks.add_task(task_of_tomorrow)
+print(len(tasks))

@@ -1,15 +1,24 @@
 import pytest
 from tasks import Task, Tasklist
+from calendars import Calendar, Calendarstub
 from datetime import date, timedelta
 
 
 def test_task():
-    today = date.today()
+    #arrange
+    today = date(2000, 1, 1)
+    tomorrow = date(2000, 1, 2)
+    next_week = date(2000, 1, 8)
+    calendar = Calendar
+    #act
     task = Task("bake cake", today)
 
+    #assert
     assert task.description == "bake cake"
     assert task.due_date == today
     assert task.finished is False 
+
+    #act 
 
 def test_task_can_be_marked_finished():
     today = date.today()
