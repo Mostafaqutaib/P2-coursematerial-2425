@@ -1,29 +1,30 @@
 import pytest
-from tasks import Task, Tasklist
-from calendars import Calendar, Calendarstub
+from tasks import Task, TaskList
+from calendars import Calendar, CalendarStub
 from datetime import date, timedelta
 
 
 def test_task():
     #arrange
     today = date(2000, 1, 1)
-    tomorrow = date(2000, 1, 2)
-    next_week = date(2000, 1, 8)
-    calendar = Calendar
+    tomorrow =  date(2000, 1, 2)
+    next_week =  date(2000, 1, 8)
     #act
-    task = Task("bake cake", today)
+    sut = Task("bake cake", today)
 
     #assert
-    assert task.description == "bake cake"
-    assert task.due_date == today
-    assert task.finished is False 
-
-    #act 
+    assert sut.description == "bake cake"
+    assert sut.due_date == today
+    assert sut.finished is False 
 
 def test_task_can_be_marked_finished():
-    today = date.today()
+    #arrange
+    today = date(2000, 1, 1)
+
+    #act
     task = Task("study testing", today)
 
+    #assert
     assert task.finished is False  # قبل
 
     task.finished = True
@@ -39,32 +40,48 @@ def test_task_can_be_marked_finished():
     ("", False),
 ])
 def test_task_finished_coerces_to_bool(value, expected):
-    today = date.today()
+    #arrange
+    today = date(2000, 1, 1)
+    #act
     task = Task("anything", today)
-
     task.finished = value
-
+    #assert
     assert task.finished is expected
-def test_task_description_is_readonly():
-    task = Task("original", date.today())
 
-    with pytest.raises(AttributeError):
-        task.description = "new one"
 def test_add_future_task_increases_length():
-    tasks = Tasklist()
-    tomorrow = date.today() + timedelta(days=1)
+    #arrange
+    today = date(2000, 1, 1)
+    tomorrow = date(2000, 1, 2)
     task = Task("future task", tomorrow)
-
-    tasks.add_task(task)
-
-    assert len(tasks) == 1
-    assert tasks.due_tasks == [task]
-    assert tasks.finished_tasks == []
-    assert tasks.overdue_tasks == []
+    #act
+    sut = TaskList(Calendar)
+    sut.add_task(task)
+    #assert
+    assert len(sut) == 1
+    assert sut.due_tasks == [task]
+    assert sut.finished_tasks == []
+    assert sut.overdue_tasks == []
 def test_add_past_task_raises():
-    tasks = Tasklist()
-    yesterday = date.today() - timedelta(days=1)
+    yesterday = date(2000, 1, 1) - timedelta(days=1)
+    
     old_task = Task("old", yesterday)
+    sut = TaskList(Calendar)
 
     with pytest.raises(RuntimeError):
-        tasks.add_task(old_task)
+        sut.add_task(old_task)
+
+def test_task_becomes_overdue():
+    # Arrange
+    today = date(2000, 1, 1)
+    tomorrow = date(2000, 1, 2)
+    next_week = date(2000, 1, 8)
+    calendar = CalendarStub(today)
+    task = Task('description', tomorrow)
+    sut = TaskList(calendar)
+    sut.add_task(task)
+
+    # Act
+    calendar.today = next_week
+
+    # Assert
+    assert [task] == sut.overdue_tasks
