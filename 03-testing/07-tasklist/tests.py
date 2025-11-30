@@ -1,36 +1,51 @@
 import pytest
+from datetime import date, timedelta
 from tasks import Task, TaskList
 from calendars import Calendar, CalendarStub
-from datetime import date, timedelta
 
+@pytest.fixture
+def today():
+    return date(2000, 1,1) 
+@pytest.fixture
+def tomorrow(today):
+    return today + timedelta(days=1)
+@pytest.fixture
+def yesterday(today):
+    return today - timedelta(days=1)
+@pytest.fixture
+def next_week(today):
+    return today + timedelta(days=7)
+@pytest.fixture
+def calendar(today):
+    return CalendarStub(today)
+@pytest.fixture
+def sut(calendar):
+    return TaskList(calendar)
 
-def test_task():
-    #arrange
-    today = date(2000, 1, 1)
-    tomorrow =  date(2000, 1, 2)
-    next_week =  date(2000, 1, 8)
-    #act
+def test_task_stores_description_and_due_date(today):
+    # Arrange
+    
+
+    # Act
     sut = Task("bake cake", today)
 
-    #assert
+    # Assert
     assert sut.description == "bake cake"
     assert sut.due_date == today
-    assert sut.finished is False 
+    assert sut.finished is False
 
-def test_task_can_be_marked_finished():
-    #arrange
-    today = date(2000, 1, 1)
 
-    #act
+def test_task_can_be_marked_finished(today):
+    # Arrange
     task = Task("study testing", today)
 
-    #assert
-    assert task.finished is False  # قبل
-
+    # Act
     task.finished = True
 
-    assert task.finished is True   # بعد
-    
+    # Assert
+    assert task.finished is True
+
+
 @pytest.mark.parametrize("value, expected", [
     (True, True),
     (False, False),
@@ -39,49 +54,42 @@ def test_task_can_be_marked_finished():
     ("something", True),
     ("", False),
 ])
-def test_task_finished_coerces_to_bool(value, expected):
-    #arrange
-    today = date(2000, 1, 1)
-    #act
+def test_task_finished_coerces_to_bool(value, expected, today):
+    # Arrange
     task = Task("anything", today)
-    task.finished = value
-    #assert
-    assert task.finished is expected
 
-def test_add_future_task_increases_length():
-    #arrange
-    today = date(2000, 1, 1)
-    tomorrow = date(2000, 1, 2)
+    # Act
+    task.finished = value
+
+    # Assert
+    assert task.finished is expected
+def test_add_future_task_increases_length(tomorrow,sut):
+    # Arrange
+
     task = Task("future task", tomorrow)
-    #act
-    sut = TaskList(Calendar)
+
+    # Act
     sut.add_task(task)
-    #assert
+
+    # Assert
     assert len(sut) == 1
     assert sut.due_tasks == [task]
     assert sut.finished_tasks == []
     assert sut.overdue_tasks == []
-def test_add_past_task_raises():
-    yesterday = date(2000, 1, 1) - timedelta(days=1)
-    
+def test_add_past_task_raises(yesterday, sut):
+    # Arrange
     old_task = Task("old", yesterday)
-    sut = TaskList(Calendar)
 
+    # Act + Assert
     with pytest.raises(RuntimeError):
         sut.add_task(old_task)
-
-def test_task_becomes_overdue():
+def test_task_becomes_overdue(tomorrow, sut, calendar, next_week):
     # Arrange
-    today = date(2000, 1, 1)
-    tomorrow = date(2000, 1, 2)
-    next_week = date(2000, 1, 8)
-    calendar = CalendarStub(today)
-    task = Task('description', tomorrow)
-    sut = TaskList(calendar)
+    task = Task("description", tomorrow)
     sut.add_task(task)
 
     # Act
     calendar.today = next_week
 
     # Assert
-    assert [task] == sut.overdue_tasks
+    assert sut.overdue_tasks == [task]

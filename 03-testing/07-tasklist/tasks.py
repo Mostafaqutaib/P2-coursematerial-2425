@@ -26,9 +26,9 @@ class Task:
         return f"Task('{self.description}', {self.due_date}, finished={self.finished})"
 
 class TaskList:
-    def __init__(self):
+    def __init__(self, calendar):
         self._task_lijst = []
-        self._calendar = Calendar.today
+        self._calendar = calendar
 
     @property
     def calendar(self):
@@ -36,7 +36,7 @@ class TaskList:
     
     
     def add_task(self, task):
-        if task.due_date < self._calendar:
+        if task.due_date < self._calendar.today:
             raise RuntimeError("cannot add task in the past")
         self._task_lijst.append(task)
     
@@ -54,6 +54,6 @@ class TaskList:
         return [
             t 
             for t in self._task_lijst
-            if not t.finished and t.due_date < self._calendar
+            if not t.finished and t.due_date < self._calendar.today
         ]
 
