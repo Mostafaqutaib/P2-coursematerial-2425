@@ -1,15 +1,18 @@
 class Human:
     def __init__(self, name):
         self.__name = name
-
-    def get_name(self):
+    
+    @property
+    def name(self):
         return self.__name
 
 
-class Archer(Human):
-    def __init__(self, name, num_arrows):
+class Archer:
+    def __init__(self, name , num_arrows):
         super().__init__(name)
         self.__num_arrows = num_arrows
-        
-    def get_num_arrows(self):
+    @property
+    def num_arrows(self):
         return self.__num_arrows
+    
+        

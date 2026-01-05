@@ -24,4 +24,4 @@ class BMICalculator:
             return 'overweight'
 calc = BMICalculator(weight_in_kg=90, height_in_m=1.80)
 calc.bmi
-calc.category
+print(calc.category)
